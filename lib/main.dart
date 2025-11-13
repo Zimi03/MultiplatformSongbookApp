@@ -12,10 +12,10 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(title: const Text('Tonacje durowe')),
         body: ListView.builder(
-          itemCount: transposer.majorKeys.length,
+          itemCount: transposer.sharpNotes.length,
           itemBuilder: (context, index) {
             return ListTile(
-              title: Text(transposer.majorKeys[index]),
+              title: Text(transposer.sharpNotes[index]),
             );
           },
         ),
