@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:songbook/models/song_structure.dart';
 
 class Song{

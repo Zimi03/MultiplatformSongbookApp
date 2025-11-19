@@ -116,7 +116,6 @@ String transposeChordToNumber(String chord, String fromKey) {
     
     
     if (rootIndex == -1 || bassIndex == -1) {
-      throw ArgumentError('Invalid chord note: $chord');
       return chord;
     }
     
@@ -261,11 +260,4 @@ List<String> generateMajorScale(String root) {
     scale.add(keys[startIndex]);
   }
   return scale;
-}
-
-void main() {
-  String progression = '|Bbmaj7/F /|F|';
-  String transposedProgression = transposeWholeProgression(progression, 'Bb', 'C');
-  String numberedProgression = transposeWholeProgression(progression, 'Bb', 'Numbers');
-  String chordedProgression = transposeWholeProgression(numberedProgression, 'Numbers', 'D');
 }
