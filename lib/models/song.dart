@@ -7,7 +7,7 @@ class Song{
   final String artist;
   final int tempo;
   final String key;
-  final String TimeSignature;
+  final String timeSignature;
   final SongStructure structure;
 
   Song({
@@ -16,7 +16,7 @@ class Song{
     required this.artist,
     required this.tempo,
     required this.key,
-    required this.TimeSignature,
+    required this.timeSignature,
     required this.structure,
   });
 
@@ -27,7 +27,7 @@ class Song{
       artist: map['artist'],
       tempo: map['tempo'],
       key: map['key'],
-      TimeSignature: map['TimeSignature'],
+      timeSignature: map['TimeSignature'],
       structure: SongStructure.fromJson(jsonDecode(map['structure'])),
     );
   }
@@ -39,7 +39,7 @@ class Song{
       'artist': artist,
       'tempo': tempo,
       'key': key,
-      'TimeSignature': TimeSignature,
+      'TimeSignature': timeSignature,
       'structure': jsonEncode(structure.toJson()),
     };
   }

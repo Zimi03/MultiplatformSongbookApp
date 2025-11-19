@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:songbook/services/daos/song_dao.dart';
 import 'package:songbook/models/song.dart';
+import 'package:songbook/pages/song_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -116,7 +117,11 @@ class _HomePageState extends State<HomePage> {
                 )),
                 subtitle: Text(song.artist, style: TextStyle(fontFamily: "Montserrat"),),
                 onTap: () {
-                  
+                  Navigator.push(context,
+                    MaterialPageRoute(
+                      builder: (context) => SongPage(song: song),
+                    ),
+                  );
                 },
               );
             },
