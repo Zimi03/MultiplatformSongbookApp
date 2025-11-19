@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: Text(_selectedIndex == 0 ? "Tonacje durowe" : "Dodaj piosenkę"),
+          title: Text(_selectedIndex == 0 ? "Song List" : "Add New Song"),
           backgroundColor: const Color(0xFF74A892),
         ),
 
@@ -48,7 +48,7 @@ class _MyAppState extends State<MyApp> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.add),
-              label: "Dodaj",
+              label: "Add Song",
             ),
           ],
         ),
