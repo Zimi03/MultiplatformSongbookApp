@@ -1,12 +1,14 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:songbook/models/song.dart';
+import 'package:songbook/services/database_helper.dart';
 
 class SongDao {
-  final Database db;
+  final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
-  SongDao(this.db);
+  SongDao(); 
 
   Future<int> insertSong(Song song) async {
+    final db = await _dbHelper.database;
     return await db.insert(
       'songs',
       song.toMap(),
@@ -14,15 +16,15 @@ class SongDao {
     );
   }
 
-
   Future<List<Song>> getAllSongs() async {
-    final List<Map<String, dynamic>> maps = await db.query('songs');
-
+    final db = await _dbHelper.database;
+    final maps = await db.query('songs');
     return maps.map((map) => Song.fromMap(map)).toList();
   }
 
   Future<Song?> getSong(int id) async {
-    final List<Map<String, dynamic>> maps =
+    final db = await _dbHelper.database;
+    final maps =
         await db.query('songs', where: "id = ?", whereArgs: [id]);
 
     if (maps.isNotEmpty) {
@@ -31,8 +33,8 @@ class SongDao {
     return null;
   }
 
-
   Future<int> updateSong(Song song) async {
+    final db = await _dbHelper.database;
     return await db.update(
       'songs',
       song.toMap(),
@@ -42,6 +44,7 @@ class SongDao {
   }
 
   Future<int> deleteSong(int id) async {
+    final db = await _dbHelper.database;
     return await db.delete(
       'songs',
       where: "id = ?",

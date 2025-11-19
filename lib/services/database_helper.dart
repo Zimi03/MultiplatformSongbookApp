@@ -27,7 +27,7 @@ class DatabaseHelper {
   }
 
 Future<void> _onCreate(Database db, int version) async {
-  await db.execute("""
+  await db.execute('''
     CREATE TABLE songs (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
@@ -35,11 +35,11 @@ Future<void> _onCreate(Database db, int version) async {
       tempo INTEGER,
       key TEXT NOT NULL,
       TimeSignature TEXT,
-      structure TEXT NOT NULL,
+      structure TEXT NOT NULL
     );
-  """);
+  ''');
 
-  // --- seed data: "Krok za krokiem" ---
+
   final Map<String, dynamic> seedStructure = {
     "sections": [
       {
