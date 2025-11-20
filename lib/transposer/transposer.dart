@@ -81,7 +81,6 @@ String trasposeChordToChord(String chord, int semitoneDifference, List<String> n
   }else{
     String rootChord = extractRootNote(chord);
     int currentIndex = notesToKey.indexOf(rootChord);
-    print(currentIndex);
     if (currentIndex == -1) {
       currentIndex = notesToKey.indexOf(enharmonicEquivalents[chord] ?? '');
     }
@@ -205,13 +204,16 @@ RegExp chordRegex = isNumberToChord
       ? RegExp(r'[IViv]+(?:[^ /\|]*)?(?:/[0-9]+)?|/')
       : RegExp(r'[A-G][b#]?(?:[^ /\|]*)?(?:/[A-G][b#]?)?|/');
 
-
-  print('Input progression: $progression');
-  String outputProgression = '|';
+  String outputProgression = '';
   List<String> barList = progression.split('|');
   
   for (String bar in barList) {
-    if (bar.isEmpty || bar == ' ') continue;
+    if (bar=="" || bar == ' ') continue;
+    if (outputProgression.endsWith('|')){
+      outputProgression += '';
+    }else{
+      outputProgression += '|';
+    }
     
     List<String> chordParts = bar.split(' ');
     for (int i = 0; i < chordParts.length; i++) {
@@ -231,7 +233,6 @@ RegExp chordRegex = isNumberToChord
           }else{
             transposed = trasposeChordToChord(chord, semitoneDifference, notesToKey);
           }
-
           part = part.replaceFirst(chord, transposed);
         });
         outputProgression += part;
@@ -243,8 +244,6 @@ RegExp chordRegex = isNumberToChord
     }
     outputProgression += '|';
   }
-  
-  print('output progression: $outputProgression');
   return outputProgression;
 }
 

@@ -54,8 +54,6 @@ Future<void> _onCreate(Database db, int version) async {
         "progression": [
           "| Bm7 | % |",
           "| G | Em7 |",
-          "",
-          ""
         ]
       },
       {
