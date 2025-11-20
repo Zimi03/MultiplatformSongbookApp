@@ -78,16 +78,20 @@ String trasposeChordToChord(String chord, int semitoneDifference, List<String> n
     String extensions = rootChord.substring(rootNote.length);
     
     return '$newRoot$extensions/$newBass';
-  }
-  
-  int currentIndex = notesToKey.indexOf(chord);
-  if (currentIndex == -1) {
-    currentIndex = notesToKey.indexOf(enharmonicEquivalents[chord] ?? '');
-  }
-  if (currentIndex == -1) return chord;
+  }else{
+    String rootChord = extractRootNote(chord);
+    int currentIndex = notesToKey.indexOf(rootChord);
+    print(currentIndex);
+    if (currentIndex == -1) {
+      currentIndex = notesToKey.indexOf(enharmonicEquivalents[chord] ?? '');
+    }
+    if (currentIndex == -1) return chord;
 
-  int transposedIndex = (currentIndex + semitoneDifference) % notesToKey.length;
-  return notesToKey[transposedIndex];
+    int transposedIndex = (currentIndex + semitoneDifference) % notesToKey.length;
+    String newRoot = notesToKey[transposedIndex];
+    String extensions = chord.substring(rootChord.length);
+    return '$newRoot$extensions';
+  }
 }
 
 String transposeChordToNumber(String chord, String fromKey) {
@@ -197,10 +201,10 @@ String transposeWholeProgression(String progression, String fromKey, String toKe
     semitoneDifference = (notesToKey.indexOf(toKey) - notesFromKey.indexOf(fromKey)) % notesFromKey.length;
   }
 
-  // Wybierz regex na podstawie typu transpozycji
-  RegExp chordRegex = isNumberToChord
+RegExp chordRegex = isNumberToChord
       ? RegExp(r'[IViv]+(?:[^ /\|]*)?(?:/[0-9]+)?|/')
       : RegExp(r'[A-G][b#]?(?:[^ /\|]*)?(?:/[A-G][b#]?)?|/');
+
 
   print('Input progression: $progression');
   String outputProgression = '|';

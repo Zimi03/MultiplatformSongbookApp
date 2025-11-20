@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:songbook/models/song.dart';
+import 'package:songbook/models/song_structure.dart';
 import 'package:songbook/pages/add_song_page.dart';
+import 'package:songbook/transposer/transposer.dart';
 
 class SongPage extends StatefulWidget {
   final Song song;
@@ -12,7 +14,34 @@ class SongPage extends StatefulWidget {
 }
 
 class _SongPageState extends State<SongPage> {
-  double _fontSize = 16;
+  final double _fontSize = 14;
+
+  late String selectedKey;
+
+  // lista możliwych tonacji
+  final List<String> allKeys = [
+    'C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#',
+    'F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb',
+    'Numbers'
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    selectedKey = widget.song.key; // domyślna tonacja z bazy
+  }
+
+  // funkcja zwracająca sekcję z transponowanymi akordami
+  List<String> _transposeProgression(SongSection section) {
+    return section.progression.map((line) {
+      return transposeWholeProgression(
+        line,
+        section.key,
+        selectedKey,
+      );
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,109 +57,128 @@ class _SongPageState extends State<SongPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => AddSongPage(),
-                ),
+                MaterialPageRoute(builder: (context) => AddSongPage()),
               );
             },
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Artist: ${widget.song.artist}',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(('Tempo: ${widget.song.tempo.toString()} BPM'),
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      ('Time Signature: ${widget.song.timeSignature}'),
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            Expanded(
-              child: Row(
+
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: ListView(
+            children: [
+              // ------------------
+              // GÓRNY PANEL (artysta, bpm, TS + dropdown tonacji)
+              // ------------------
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for(var section in widget.song.structure.sections) ...[
-                          Text(
-                            section.name,
-                            style: TextStyle(
-                              fontSize: _fontSize,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          for (int i = 0; i < section.lyrics.length; i++) ...[
-                            Text(
-                              section.lyrics[i],
-                              style: TextStyle(fontSize: _fontSize),
-                            ),
-                            SizedBox(height: 4),
-                          ],
-                          SizedBox(height: 16),
-                        ],
-                      ],
-                    ),
+                  Text(
+                    'Artist: ${widget.song.artist}',
+                    style: TextStyle(fontSize: 18, fontFamily:'Inter', fontWeight: FontWeight.w700),
                   ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for(var section in widget.song.structure.sections) ...[
-                          Text(
-                            section.name,
-                            style: TextStyle(
-                              fontSize: _fontSize - 4,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          for (int i = 0; i < section.progression.length; i++) ...[
-                            Text(
-                              section.progression[i],
-                              style: TextStyle(
-                                fontSize: _fontSize,
-                                fontFamily: 'CourierNew',
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                          ],
-                          SizedBox(height: 16),
-                        ],
-                      ],
-                    ),
+
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text('${widget.song.tempo} BPM',
+                          style: TextStyle(fontSize: 18,fontFamily: 'Inter', fontWeight: FontWeight.w700)),
+                      Text(widget.song.timeSignature,
+                          style: TextStyle(fontSize: 18, fontFamily: 'Inter', fontWeight: FontWeight.w700)),
+                    ],
                   ),
                 ],
               ),
-            ),
-          ],
+
+              SizedBox(height: 10),
+
+              // ------------------
+              // DROPDOWN Z TONACJĄ
+              // ------------------
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Key:",
+                    style: TextStyle(fontFamily: "Inter", fontSize: 18, fontWeight: FontWeight.w700),
+                  ),
+                  DropdownButton<String>(
+                    value: selectedKey,
+                    dropdownColor: Colors.white,
+                    style: TextStyle(fontSize: 18, color: Colors.black, fontFamily: "Inter"),
+                    items: allKeys.map((key) {
+                      return DropdownMenuItem(
+                        value: key,
+                        child: Text(key),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedKey = value!;
+                      });
+                    },
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 20),
+
+              // ------------------
+              // SEKCJE PIOSENKI
+              // ------------------
+              for (var section in widget.song.structure.sections) ...[
+                Text(
+                  section.name,
+                  style: TextStyle(
+                    fontSize: _fontSize + 4,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: 8),
+
+                // pobieramy transponowane akordy tej sekcji
+                for (int i = 0; i < section.lyrics.length; i++)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          section.lyrics[i],
+                          style: TextStyle(fontSize: _fontSize, fontFamily: "Inter"),
+                        ),
+                      ),
+
+                      Expanded(
+                        flex: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 16.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              _transposeProgression(section).length > i
+                                  ? _transposeProgression(section)[i]
+                                  : "",
+                              style: TextStyle(
+                                fontSize: _fontSize,
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+
+                SizedBox(height: 20),
+              ],
+            ],
+          ),
         ),
       ),
     );

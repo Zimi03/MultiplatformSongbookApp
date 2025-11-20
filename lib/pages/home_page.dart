@@ -113,9 +113,9 @@ class _HomePageState extends State<HomePage> {
               final song = _filteredSongs[i];
               return ListTile(
                 title: Text("${song.id}. ${song.title}", style: TextStyle(
-                  fontFamily: "Montserrat",
+                  fontFamily: "Inter",
                 )),
-                subtitle: Text(song.artist, style: TextStyle(fontFamily: "Montserrat"),),
+                subtitle: Text(song.artist, style: TextStyle(fontFamily: "Inter"),),
                 onTap: () {
                   Navigator.push(context,
                     MaterialPageRoute(

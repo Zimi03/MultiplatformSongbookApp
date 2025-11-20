@@ -31,7 +31,8 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: Text(_selectedIndex == 0 ? "Song List" : "Add New Song",),
+          title: Text(_selectedIndex == 0 ? "Song List" : "Add New Song", style: 
+          TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w700),),
           backgroundColor: const Color(0xFF74A892),
         ),
 
