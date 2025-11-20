@@ -18,7 +18,6 @@ class _SongPageState extends State<SongPage> {
 
   late String selectedKey;
 
-  // lista możliwych tonacji
   final List<String> allKeys = [
     'C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#',
     'F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb',
@@ -28,10 +27,9 @@ class _SongPageState extends State<SongPage> {
   @override
   void initState() {
     super.initState();
-    selectedKey = widget.song.key; // domyślna tonacja z bazy
+    selectedKey = widget.song.key; 
   }
 
-  // funkcja zwracająca sekcję z transponowanymi akordami
   List<String> _transposeProgression(SongSection section) {
     return section.progression.map((line) {
       return transposeWholeProgression(
@@ -40,6 +38,47 @@ class _SongPageState extends State<SongPage> {
         selectedKey,
       );
     }).toList();
+  }
+
+  List<Widget> _buildSectionWidgets(SongSection section) {
+    final transposed = _transposeProgression(section);
+    final widgets = <Widget>[];
+
+    for (int i = 0; i < section.lyrics.length; i++) {
+      widgets.add(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 3,
+              child: Text(
+                section.lyrics[i],
+                style: TextStyle(fontSize: _fontSize, fontFamily: "Inter"),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    transposed.length > i ? transposed[i] : "",
+                    style: TextStyle(
+                      fontSize: _fontSize,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return widgets;
   }
 
   @override
@@ -69,9 +108,6 @@ class _SongPageState extends State<SongPage> {
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: ListView(
             children: [
-              // ------------------
-              // GÓRNY PANEL (artysta, bpm, TS + dropdown tonacji)
-              // ------------------
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,10 +130,6 @@ class _SongPageState extends State<SongPage> {
               ),
 
               SizedBox(height: 10),
-
-              // ------------------
-              // DROPDOWN Z TONACJĄ
-              // ------------------
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -125,10 +157,6 @@ class _SongPageState extends State<SongPage> {
               ),
 
               SizedBox(height: 20),
-
-              // ------------------
-              // SEKCJE PIOSENKI
-              // ------------------
               for (var section in widget.song.structure.sections) ...[
                 Text(
                   section.name,
@@ -140,40 +168,8 @@ class _SongPageState extends State<SongPage> {
                 ),
                 SizedBox(height: 8),
 
-                // pobieramy transponowane akordy tej sekcji
-                for (int i = 0; i < section.lyrics.length; i++)
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: Text(
-                          section.lyrics[i],
-                          style: TextStyle(fontSize: _fontSize, fontFamily: "Inter"),
-                        ),
-                      ),
-
-                      Expanded(
-                        flex: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 16.0),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              _transposeProgression(section).length > i
-                                  ? _transposeProgression(section)[i]
-                                  : "",
-                              style: TextStyle(
-                                fontSize: _fontSize,
-                                fontFamily: "Inter",
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
+                // zamiast IIFE używamy helpera
+                ..._buildSectionWidgets(section),
 
                 SizedBox(height: 20),
               ],
