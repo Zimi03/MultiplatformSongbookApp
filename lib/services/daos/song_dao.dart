@@ -5,13 +5,18 @@ import 'package:songbook/services/database_helper.dart';
 class SongDao {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
-  SongDao(); 
+  SongDao();
 
+  // CREATE
   Future<int> insertSong(Song song) async {
     final db = await _dbHelper.database;
+
+    final map = song.toMap();
+    map.remove('id'); 
+
     return await db.insert(
       'songs',
-      song.toMap(),
+      map,
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
@@ -35,6 +40,11 @@ class SongDao {
 
   Future<int> updateSong(Song song) async {
     final db = await _dbHelper.database;
+
+    if (song.id == null) {
+      throw ArgumentError("Cannot update a song without an ID");
+    }
+
     return await db.update(
       'songs',
       song.toMap(),
@@ -43,6 +53,7 @@ class SongDao {
     );
   }
 
+  // DELETE
   Future<int> deleteSong(int id) async {
     final db = await _dbHelper.database;
     return await db.delete(

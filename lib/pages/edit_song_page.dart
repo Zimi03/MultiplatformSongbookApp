@@ -3,27 +3,49 @@ import 'package:songbook/models/song.dart';
 import 'package:songbook/models/song_structure.dart';
 import 'package:songbook/services/daos/song_dao.dart';
 
-class AddSongPage extends StatefulWidget {
+class EditSongPage extends StatefulWidget {
+  final Song song;
+
+  EditSongPage({required this.song});
+
   @override
-  State<AddSongPage> createState() => _AddSongPageState();
+  State<EditSongPage> createState() => _EditSongPageState();
 }
 
-class _AddSongPageState extends State<AddSongPage> {
+class _EditSongPageState extends State<EditSongPage> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController titleCtrl = TextEditingController();
-  final TextEditingController artistCtrl = TextEditingController();
-  final TextEditingController tempoCtrl = TextEditingController();
+  late TextEditingController titleCtrl;
+  late TextEditingController artistCtrl;
+  late TextEditingController tempoCtrl;
 
-  String selectedKey = "C";
-  String selectedTime = "4/4";
+  late String selectedKey;
+  late String selectedTime;
 
   List<Map<String, TextEditingController>> sections = [];
 
   @override
   void initState() {
     super.initState();
-    addNewSection(); 
+
+    // wypełnienie pól
+    titleCtrl = TextEditingController(text: widget.song.title);
+    artistCtrl = TextEditingController(text: widget.song.artist);
+    tempoCtrl = TextEditingController(text: widget.song.tempo.toString());
+
+    selectedKey = widget.song.key;
+    selectedTime = widget.song.timeSignature;
+
+    // wypełnianie sekcji
+    for (var sec in widget.song.structure.sections) {
+      sections.add({
+        "name": TextEditingController(text: sec.name),
+        "lyrics": TextEditingController(text: sec.lyrics.join("\n")),
+        "progression": TextEditingController(text: sec.progression.join("\n")),
+      });
+    }
+
+    if (sections.isEmpty) addNewSection();
   }
 
   void addNewSection() {
@@ -55,8 +77,8 @@ class _AddSongPageState extends State<AddSongPage> {
 
     SongStructure structure = SongStructure(sections: songSections);
 
-    Song newSong = Song(
-      id: null, 
+    Song updated = Song(
+      id: widget.song.id,
       title: titleCtrl.text.trim(),
       artist: artistCtrl.text.trim(),
       tempo: int.tryParse(tempoCtrl.text.trim()) ?? 120,
@@ -65,8 +87,7 @@ class _AddSongPageState extends State<AddSongPage> {
       structure: structure,
     );
 
-    await SongDao().insertSong(newSong);
-
+    await SongDao().updateSong(updated);
     Navigator.pop(context);
   }
 
@@ -74,7 +95,7 @@ class _AddSongPageState extends State<AddSongPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Dodaj piosenkę"),
+        title: Text("Edytuj piosenkę"),
         backgroundColor: Color(0xFF74A892),
       ),
       floatingActionButton: FloatingActionButton(
@@ -163,7 +184,7 @@ class _AddSongPageState extends State<AddSongPage> {
 
                             if (sections.length > 1)
                               IconButton(
-                                icon: Icon(Icons.delete, color: Colors.black),
+                                icon: Icon(Icons.delete, color: Colors.red),
                                 onPressed: () {
                                   setState(() {
                                     sections.removeAt(i);
@@ -193,6 +214,7 @@ class _AddSongPageState extends State<AddSongPage> {
                     ),
                   ),
                 ],
+
                 SizedBox(height: 32),
 
                 ElevatedButton(
@@ -201,8 +223,13 @@ class _AddSongPageState extends State<AddSongPage> {
                     backgroundColor: Color(0xFFFF8400),
                     padding: EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: Text("Zapisz piosenkę",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
+                  child: Text(
+                    "Zapisz zmiany",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
                 ),
               ],
             ),

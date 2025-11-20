@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:songbook/models/song_structure.dart';
 
-class Song{
-  final int id;
+class Song {
+  final int? id;            
   final String title;
   final String artist;
   final int tempo;
@@ -11,7 +11,7 @@ class Song{
   final SongStructure structure;
 
   Song({
-    required this.id,
+    this.id,               
     required this.title,
     required this.artist,
     required this.tempo,
@@ -22,7 +22,7 @@ class Song{
 
   factory Song.fromMap(Map<String, dynamic> map) {
     return Song(
-      id: map['id'],
+      id: map['id'],      
       title: map['title'],
       artist: map['artist'],
       tempo: map['tempo'],
@@ -34,7 +34,7 @@ class Song{
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      'id': id,                  
       'title': title,
       'artist': artist,
       'tempo': tempo,

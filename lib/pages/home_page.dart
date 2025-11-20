@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:songbook/services/daos/song_dao.dart';
 import 'package:songbook/models/song.dart';
 import 'package:songbook/pages/song_page.dart';
+import 'package:songbook/pages/add_song_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -84,50 +85,78 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: TextField(
-            decoration: InputDecoration(
-              labelText: "Szukaj (tytuł / artysta)",
-              border: OutlineInputBorder(),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Song List",
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        backgroundColor: const Color(0xFF74A892),
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF74A892),
+        child: const Icon(Icons.add),
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddSongPage()),
+          );
+          _loadSongs(); // odśwież listę po powrocie
+        },
+      ),
+
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: TextField(
+              decoration: const InputDecoration(
+                labelText: "Szukaj (tytuł / artysta)",
+                border: OutlineInputBorder(),
+              ),
+              onChanged: _filterSongs,
             ),
-            onChanged: _filterSongs,
           ),
-        ),
 
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _sortButton("ID", "id"),
-            _sortButton("Tytuł", "title"),
-            _sortButton("Artysta", "artist"),
-          ],
-        ),
-
-        Expanded(
-          child: ListView.builder(
-            itemCount: _filteredSongs.length,
-            itemBuilder: (context, i) {
-              final song = _filteredSongs[i];
-              return ListTile(
-                title: Text("${song.id}. ${song.title}", style: TextStyle(
-                  fontFamily: "Inter",
-                )),
-                subtitle: Text(song.artist, style: TextStyle(fontFamily: "Inter"),),
-                onTap: () {
-                  Navigator.push(context,
-                    MaterialPageRoute(
-                      builder: (context) => SongPage(song: song),
-                    ),
-                  );
-                },
-              );
-            },
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _sortButton("ID", "id"),
+              _sortButton("Tytuł", "title"),
+              _sortButton("Artysta", "artist"),
+            ],
           ),
-        ),
-      ],
+
+          Expanded(
+            child: ListView.builder(
+              itemCount: _filteredSongs.length,
+              itemBuilder: (context, i) {
+                final song = _filteredSongs[i];
+                return ListTile(
+                  title: Text(
+                    "${song.id}. ${song.title}",
+                    style: const TextStyle(fontFamily: "Inter"),
+                  ),
+                  subtitle: Text(
+                    song.artist,
+                    style: const TextStyle(fontFamily: "Inter"),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => SongPage(song: song)),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -140,11 +169,14 @@ class _HomePageState extends State<HomePage> {
         isActive
             ? (_ascending ? Icons.arrow_upward : Icons.arrow_downward)
             : Icons.unfold_more,
-        color: isActive ? Color(0xFFff8400) : Colors.grey,
+        color: isActive ? const Color(0xFFff8400) : Colors.grey,
+      ),
+      label: Text(
+        label,
+        style: TextStyle(
+          color: isActive ? const Color(0xFFff8400) : Colors.grey,
         ),
-      label: Text(label, style: TextStyle(
-        color: isActive ? Color(0xFFff8400) : Colors.grey,
-      )),
+      ),
     );
   }
 }

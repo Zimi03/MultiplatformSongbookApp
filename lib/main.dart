@@ -1,59 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:songbook/pages/home_page.dart';
-import 'package:songbook/pages/add_song_page.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  int _selectedIndex = 0;
-
-  final List<Widget> _pages = [
-    HomePage(),
-    AddSongPage(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(_selectedIndex == 0 ? "Song List" : "Add New Song", style: 
-          TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w700),),
-          backgroundColor: const Color(0xFF74A892),
-        ),
-
-        body: _pages[_selectedIndex],
-
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          selectedItemColor: const Color(0xFF74A892),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: "Home",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.add),
-              label: "Add Song",
-            ),
-          ],
-        ),
+      title: "Songbook",
+      theme: ThemeData(
+        primaryColor: const Color(0xFF74A892),
       ),
+      home: const HomePage(),
     );
   }
 }

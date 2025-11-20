@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:songbook/models/song.dart';
 import 'package:songbook/models/song_structure.dart';
-import 'package:songbook/pages/add_song_page.dart';
+import 'package:songbook/pages/edit_song_page.dart';
 import 'package:songbook/transposer/transposer.dart';
 
 class SongPage extends StatefulWidget {
@@ -14,7 +14,7 @@ class SongPage extends StatefulWidget {
 }
 
 class _SongPageState extends State<SongPage> {
-  final double _fontSize = 14;
+  final double _fontSize = 16;
 
   late String selectedKey;
 
@@ -30,18 +30,18 @@ class _SongPageState extends State<SongPage> {
     selectedKey = widget.song.key; 
   }
 
-  List<String> _transposeProgression(SongSection section) {
+  List<String> _transposeProgression(SongSection section, Song song) {
     return section.progression.map((line) {
       return transposeWholeProgression(
         line,
-        section.key,
+        song.key,
         selectedKey,
       );
     }).toList();
   }
 
-  List<Widget> _buildSectionWidgets(SongSection section) {
-    final transposed = _transposeProgression(section);
+  List<Widget> _buildSectionWidgets(SongSection section, Song song) {
+    final transposed = _transposeProgression(section, song);
     final widgets = <Widget>[];
 
     for (int i = 0; i < section.lyrics.length; i++) {
@@ -96,7 +96,7 @@ class _SongPageState extends State<SongPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AddSongPage()),
+                MaterialPageRoute(builder: (context) => EditSongPage(song: widget.song)),
               );
             },
           ),
@@ -169,7 +169,7 @@ class _SongPageState extends State<SongPage> {
                 SizedBox(height: 8),
 
                 // zamiast IIFE używamy helpera
-                ..._buildSectionWidgets(section),
+                ..._buildSectionWidgets(section, widget.song),
 
                 SizedBox(height: 20),
               ],

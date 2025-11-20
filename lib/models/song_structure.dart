@@ -21,16 +21,14 @@ class SongStructure {
 
 class SongSection {
   final String name;
-  final String key;
   final List<String> lyrics;
   final List<String> progression;
 
-  SongSection({required this.name, required this.key, required this.lyrics, required this.progression});
+  SongSection({required this.name, required this.lyrics, required this.progression});
 
   factory SongSection.fromJson(Map<String, dynamic> json) {
     return SongSection(
       name: json['name'],
-      key: json['key'],
       lyrics: List<String>.from(json['lyrics']),
       progression: List<String>.from(json['progression']),
     );
@@ -39,7 +37,6 @@ class SongSection {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'key': key,
       'lyrics': lyrics,
       'progression': progression,
     };

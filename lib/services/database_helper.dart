@@ -44,7 +44,6 @@ Future<void> _onCreate(Database db, int version) async {
     "sections": [
       {
         "name": "ZWR 1",
-        "key": "D",
         "lyrics": [
           "PRZEZ TWE CIAŁO PRZEZ ZASŁONĘ",
           "ŚMIAŁO WCHODZĘ DO ŚWIĄTYNI",
@@ -58,7 +57,6 @@ Future<void> _onCreate(Database db, int version) async {
       },
       {
         "name": "REF",
-        "key": "D",
         "lyrics": [
           "KROK ZA KROKIEM CORAZ BLIŻEJ.",
           "W BLASKU OCZY SWE ZAKRYWAM",
