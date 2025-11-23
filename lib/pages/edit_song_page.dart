@@ -86,9 +86,9 @@ class _EditSongPageState extends State<EditSongPage> {
       timeSignature: selectedTime,
       structure: structure,
     );
-
+ 
     await SongDao().updateSong(updated);
-    Navigator.pop(context);
+    Navigator.pop(context, updated);
   }
 
   @override

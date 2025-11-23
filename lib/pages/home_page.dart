@@ -39,7 +39,8 @@ class _HomePageState extends State<HomePage> {
       _query = query.toLowerCase();
       _filteredSongs = _songs.where((s) {
         return s.title.toLowerCase().contains(_query) ||
-               s.artist.toLowerCase().contains(_query);
+               s.artist.toLowerCase().contains(_query) || 
+               s.structure.sections.any((sec) => sec.lyrics.any((l) => l.toLowerCase().contains(_query)));
       }).toList();
       _sortSongs();
     });
@@ -125,32 +126,66 @@ class _HomePageState extends State<HomePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _sortButton("ID", "id"),
               _sortButton("Tytuł", "title"),
               _sortButton("Artysta", "artist"),
+              _sortButton("Added", "id"),
             ],
           ),
-
           Expanded(
             child: ListView.builder(
               itemCount: _filteredSongs.length,
               itemBuilder: (context, i) {
                 final song = _filteredSongs[i];
-                return ListTile(
-                  title: Text(
-                    "${song.id}. ${song.title}",
-                    style: const TextStyle(fontFamily: "Inter"),
+
+                return Dismissible(
+                  key: Key(song.id.toString()),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: const Icon(Icons.delete, color: Colors.white, size: 32),
                   ),
-                  subtitle: Text(
-                    song.artist,
-                    style: const TextStyle(fontFamily: "Inter"),
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => SongPage(song: song)),
+                  confirmDismiss: (_) async {
+                    return await showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text("Usunąć piosenkę?"),
+                        content: Text("Czy na pewno chcesz usunąć „${song.title}”?"),
+                        actions: [
+                          TextButton(
+                            child: Text("Anuluj"),
+                            onPressed: () => Navigator.of(context).pop(false),
+                          ),
+                          TextButton(
+                            child: Text("Usuń", style: TextStyle(color: Colors.red)),
+                            onPressed: () => Navigator.of(context).pop(true),
+                          ),
+                        ],
+                      ),
                     );
                   },
+                  onDismissed: (_) async {
+                    await SongDao().deleteSong(song.id!);
+                    _loadSongs(); // odśwież listę
+                  },
+                  child: ListTile(
+                    title: Text(
+                      "${i + 1}. ${song.title}",
+                      style: const TextStyle(fontFamily: "Inter"),
+                    ),
+
+                    subtitle: Text(
+                      song.artist,
+                      style: const TextStyle(fontFamily: "Inter"),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => SongPage(song: song)),
+                      );
+                    },
+                  ),
                 );
               },
             ),

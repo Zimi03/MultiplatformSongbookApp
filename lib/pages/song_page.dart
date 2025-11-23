@@ -14,8 +14,8 @@ class SongPage extends StatefulWidget {
 }
 
 class _SongPageState extends State<SongPage> {
+  late Song currentSong; // ← edytowalna kopia
   final double _fontSize = 16;
-
   late String selectedKey;
 
   final List<String> allKeys = [
@@ -27,8 +27,11 @@ class _SongPageState extends State<SongPage> {
   @override
   void initState() {
     super.initState();
-    selectedKey = widget.song.key; 
+    currentSong = widget.song;
+    selectedKey = currentSong.key;
   }
+
+  int _max(int a, int b) => a > b ? a : b;
 
   List<String> _transposeProgression(SongSection section, Song song) {
     return section.progression.map((line) {
@@ -44,7 +47,9 @@ class _SongPageState extends State<SongPage> {
     final transposed = _transposeProgression(section, song);
     final widgets = <Widget>[];
 
-    for (int i = 0; i < section.lyrics.length; i++) {
+    int maxLines = _max(section.lyrics.length, transposed.length);
+
+    for (int i = 0; i < maxLines; i++) {
       widgets.add(
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,7 +57,7 @@ class _SongPageState extends State<SongPage> {
             Expanded(
               flex: 3,
               child: Text(
-                section.lyrics[i],
+                i < section.lyrics.length ? section.lyrics[i] : "",
                 style: TextStyle(fontSize: _fontSize, fontFamily: "Inter"),
               ),
             ),
@@ -63,7 +68,7 @@ class _SongPageState extends State<SongPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    transposed.length > i ? transposed[i] : "",
+                    i < transposed.length ? transposed[i] : "",
                     style: TextStyle(
                       fontSize: _fontSize,
                       fontFamily: "Inter",
@@ -86,18 +91,27 @@ class _SongPageState extends State<SongPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.song.title,
+          currentSong.title,
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         backgroundColor: const Color(0xFF74A892),
         actions: [
           IconButton(
             icon: Icon(Icons.edit),
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              final updatedSong = await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => EditSongPage(song: widget.song)),
+                MaterialPageRoute(
+                  builder: (context) => EditSongPage(song: currentSong),
+                ),
               );
+
+              if (updatedSong != null) {
+                setState(() {
+                  currentSong = updatedSong;
+                  selectedKey = updatedSong.key;
+                });
+              }
             },
           ),
         ],
@@ -113,16 +127,16 @@ class _SongPageState extends State<SongPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Artist: ${widget.song.artist}',
+                    'Artist: ${currentSong.artist}',
                     style: TextStyle(fontSize: 18, fontFamily:'Inter', fontWeight: FontWeight.w700),
                   ),
 
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('${widget.song.tempo} BPM',
+                      Text('${currentSong.tempo} BPM',
                           style: TextStyle(fontSize: 18,fontFamily: 'Inter', fontWeight: FontWeight.w700)),
-                      Text(widget.song.timeSignature,
+                      Text(currentSong.timeSignature,
                           style: TextStyle(fontSize: 18, fontFamily: 'Inter', fontWeight: FontWeight.w700)),
                     ],
                   ),
@@ -156,8 +170,11 @@ class _SongPageState extends State<SongPage> {
                 ],
               ),
 
-              SizedBox(height: 20),
-              for (var section in widget.song.structure.sections) ...[
+              SizedBox(height: 6),
+              Divider(color: Colors.black, thickness: 1),
+              SizedBox(height: 6),
+
+              for (var section in currentSong.structure.sections) ...[
                 Text(
                   section.name,
                   style: TextStyle(
@@ -168,8 +185,7 @@ class _SongPageState extends State<SongPage> {
                 ),
                 SizedBox(height: 8),
 
-                // zamiast IIFE używamy helpera
-                ..._buildSectionWidgets(section, widget.song),
+                ..._buildSectionWidgets(section, currentSong),
 
                 SizedBox(height: 20),
               ],
