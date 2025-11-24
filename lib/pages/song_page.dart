@@ -92,7 +92,7 @@ class _SongPageState extends State<SongPage> {
       appBar: AppBar(
         title: Text(
           currentSong.title,
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 24, fontFamily: "Inter"),
         ),
         backgroundColor: const Color(0xFF74A892),
         actions: [
@@ -116,7 +116,6 @@ class _SongPageState extends State<SongPage> {
           ),
         ],
       ),
-
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0),

@@ -34,7 +34,7 @@ Future<void> _onCreate(Database db, int version) async {
       artist TEXT,
       tempo INTEGER,
       key TEXT NOT NULL,
-      timeSignature TEXT,
+      TimeSignature TEXT,
       structure TEXT NOT NULL
     );
   ''');

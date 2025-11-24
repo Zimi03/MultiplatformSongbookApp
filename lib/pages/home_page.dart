@@ -91,8 +91,7 @@ class _HomePageState extends State<HomePage> {
         title: const Text(
           "Song List",
           style: TextStyle(
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w700,
+            fontFamily: 'Inter'
           ),
         ),
         backgroundColor: const Color(0xFF74A892),
@@ -174,17 +173,17 @@ class _HomePageState extends State<HomePage> {
                       "${i + 1}. ${song.title}",
                       style: const TextStyle(fontFamily: "Inter"),
                     ),
-
                     subtitle: Text(
                       song.artist,
                       style: const TextStyle(fontFamily: "Inter"),
                     ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => SongPage(song: song)),
-                      );
-                    },
+                   onTap: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => SongPage(song: song)),
+                    );
+                    _loadSongs();
+                  }
                   ),
                 );
               },

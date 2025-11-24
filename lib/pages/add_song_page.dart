@@ -20,6 +20,28 @@ class _AddSongPageState extends State<AddSongPage> {
 
   List<Map<String, TextEditingController>> sections = [];
 
+  final progressionRegex = RegExp(
+    r'^(\|\s*([^\|]+?)\s*)+\|$'
+  );
+
+
+  String? validateProgression(String? value) {
+    if (value == null || value.trim().isEmpty) return null; // allow empty if user wants no chords
+
+    final lines = value.split("\n");
+
+    for (var line in lines) {
+      if (line.trim().isEmpty) continue;
+
+      if (!progressionRegex.hasMatch(line.trim())) {
+        return "Niepoprawny format progresji w linii:\n$line\n"
+            "Użyj: | akord / % | ...";
+      }
+    }
+
+    return null; // OK
+  }
+
   @override
   void initState() {
     super.initState();
@@ -74,7 +96,7 @@ class _AddSongPageState extends State<AddSongPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Dodaj piosenkę"),
+        title: Text("Dodaj piosenkę", style: TextStyle(fontFamily: "Inter"),),
         backgroundColor: Color(0xFF74A892),
       ),
       floatingActionButton: FloatingActionButton(
@@ -109,7 +131,7 @@ class _AddSongPageState extends State<AddSongPage> {
 
                 // TONACJA
                 DropdownButtonFormField<String>(
-                  value: selectedKey,
+                  initialValue: selectedKey,
                   decoration: InputDecoration(labelText: "Tonacja"),
                   items: [
                     "C", "G", "D", "A", "E", "B", "F#", "C#",
@@ -119,14 +141,24 @@ class _AddSongPageState extends State<AddSongPage> {
                   onChanged: (v) => setState(() => selectedKey = v!),
                 ),
 
-                // METRUM
-                DropdownButtonFormField<String>(
-                  value: selectedTime,
-                  decoration: InputDecoration(labelText: "Metrum"),
-                  items: ["4/4", "3/4", "6/8", "2/4"]
-                      .map((t) => DropdownMenuItem(value: t, child: Text(t)))
-                      .toList(),
-                  onChanged: (v) => setState(() => selectedTime = v!),
+                TextFormField(
+                  decoration: InputDecoration(labelText: "Metrum (np. 4/4)"),
+                  keyboardType: TextInputType.text,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return "Podaj metrum";
+
+                    final regex = RegExp(r'^\d+\/\d+$');
+                    if (!regex.hasMatch(value.trim())) {
+                      return "Metrum musi mieć format liczba/liczba (np. 4/4)";
+                    }
+
+                    return null;
+                  },
+                  onChanged: (value) {
+                    setState(() {
+                      selectedTime = value.trim();
+                    });
+                  },
                 ),
 
                 SizedBox(height: 24),
@@ -186,7 +218,11 @@ class _AddSongPageState extends State<AddSongPage> {
 
                         TextFormField(
                           controller: sections[i]["progression"],
-                          decoration: InputDecoration(labelText: "Progresja (akord na linię)"),
+                          decoration: InputDecoration(
+                            labelText: "Progresja (akordy w taktach, np. | Cmaj7 | Am7 D7 |)",
+                            errorMaxLines: 3,
+                          ),
+                          validator: validateProgression,
                           maxLines: null,
                         ),
                       ],
