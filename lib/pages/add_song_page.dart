@@ -26,7 +26,7 @@ class _AddSongPageState extends State<AddSongPage> {
 
 
   String? validateProgression(String? value) {
-    if (value == null || value.trim().isEmpty) return null; // allow empty if user wants no chords
+    if (value == null || value.trim().isEmpty) return null; 
 
     final lines = value.split("\n");
 
@@ -39,7 +39,7 @@ class _AddSongPageState extends State<AddSongPage> {
       }
     }
 
-    return null; // OK
+    return null; 
   }
 
   @override
@@ -111,7 +111,6 @@ class _AddSongPageState extends State<AddSongPage> {
             key: _formKey,
             child: ListView(
               children: [
-                // --- główne pola ---
                 TextFormField(
                   controller: titleCtrl,
                   decoration: InputDecoration(labelText: "Tytuł"),
@@ -129,7 +128,6 @@ class _AddSongPageState extends State<AddSongPage> {
 
                 SizedBox(height: 16),
 
-                // TONACJA
                 DropdownButtonFormField<String>(
                   initialValue: selectedKey,
                   decoration: InputDecoration(labelText: "Tonacja"),

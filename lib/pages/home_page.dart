@@ -105,7 +105,7 @@ class _HomePageState extends State<HomePage> {
             context,
             MaterialPageRoute(builder: (context) => AddSongPage()),
           );
-          _loadSongs(); // odśwież listę po powrocie
+          _loadSongs();
         },
       ),
 

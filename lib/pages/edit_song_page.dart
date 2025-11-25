@@ -31,7 +31,7 @@ class _EditSongPageState extends State<EditSongPage> {
 
 
   String? validateProgression(String? value) {
-    if (value == null || value.trim().isEmpty) return null; // allow empty if user wants no chords
+    if (value == null || value.trim().isEmpty) return null; 
 
     final lines = value.split("\n");
 
@@ -44,7 +44,7 @@ class _EditSongPageState extends State<EditSongPage> {
       }
     }
 
-    return null; // OK
+    return null;
   }
 
   @override
@@ -133,7 +133,6 @@ class _EditSongPageState extends State<EditSongPage> {
             key: _formKey,
             child: ListView(
               children: [
-                // --- główne pola ---
                 TextFormField(
                   controller: titleCtrl,
                   decoration: InputDecoration(labelText: "Tytuł"),
@@ -151,7 +150,6 @@ class _EditSongPageState extends State<EditSongPage> {
 
                 SizedBox(height: 16),
 
-                // TONACJA
                 DropdownButtonFormField<String>(
                   initialValue: selectedKey,
                   decoration: InputDecoration(labelText: "Tonacja"),
@@ -163,7 +161,6 @@ class _EditSongPageState extends State<EditSongPage> {
                   onChanged: (v) => setState(() => selectedKey = v!),
                 ),
 
-                // METRUM
                 TextFormField(
                   initialValue: selectedTime,
                   decoration: InputDecoration(labelText: "Metrum (np. 4/4)"),
