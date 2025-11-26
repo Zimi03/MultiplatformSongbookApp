@@ -216,7 +216,7 @@ class _EditSongPageState extends State<EditSongPage> {
 
                             if (sections.length > 1)
                               IconButton(
-                                icon: Icon(Icons.delete, color: Colors.red),
+                                icon: Icon(Icons.delete, color: Colors.grey),
                                 onPressed: () {
                                   setState(() {
                                     sections.removeAt(i);

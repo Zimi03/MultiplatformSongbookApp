@@ -109,88 +109,90 @@ class _HomePageState extends State<HomePage> {
         },
       ),
 
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: TextField(
-              decoration: const InputDecoration(
-                labelText: "Szukaj (tytuł / artysta)",
-                border: OutlineInputBorder(),
+      body:SafeArea(child: 
+        Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: TextField(
+                decoration: const InputDecoration(
+                  labelText: "Szukaj (tytuł / artysta)",
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: _filterSongs,
               ),
-              onChanged: _filterSongs,
             ),
-          ),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _sortButton("Tytuł", "title"),
-              _sortButton("Artysta", "artist"),
-              _sortButton("Added", "id"),
-            ],
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _filteredSongs.length,
-              itemBuilder: (context, i) {
-                final song = _filteredSongs[i];
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _sortButton("Tytuł", "title"),
+                _sortButton("Artysta", "artist"),
+                _sortButton("Added", "id"),
+              ],
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _filteredSongs.length,
+                itemBuilder: (context, i) {
+                  final song = _filteredSongs[i];
 
-                return Dismissible(
-                  key: Key(song.id.toString()),
-                  direction: DismissDirection.endToStart,
-                  background: Container(
-                    color: Colors.red,
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: const Icon(Icons.delete, color: Colors.white, size: 32),
-                  ),
-                  confirmDismiss: (_) async {
-                    return await showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text("Usunąć piosenkę?"),
-                        content: Text("Czy na pewno chcesz usunąć „${song.title}”?"),
-                        actions: [
-                          TextButton(
-                            child: Text("Anuluj"),
-                            onPressed: () => Navigator.of(context).pop(false),
-                          ),
-                          TextButton(
-                            child: Text("Usuń", style: TextStyle(color: Colors.red)),
-                            onPressed: () => Navigator.of(context).pop(true),
-                          ),
-                        ],
+                  return Dismissible(
+                    key: Key(song.id.toString()),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: const Icon(Icons.delete, color: Colors.white, size: 32),
+                    ),
+                    confirmDismiss: (_) async {
+                      return await showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text("Usunąć piosenkę?"),
+                          content: Text("Czy na pewno chcesz usunąć „${song.title}”?"),
+                          actions: [
+                            TextButton(
+                              child: Text("Anuluj"),
+                              onPressed: () => Navigator.of(context).pop(false),
+                            ),
+                            TextButton(
+                              child: Text("Usuń", style: TextStyle(color: Colors.red)),
+                              onPressed: () => Navigator.of(context).pop(true),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    onDismissed: (_) async {
+                      await SongDao().deleteSong(song.id!);
+                      _loadSongs(); // odśwież listę
+                    },
+                    child: ListTile(
+                      title: Text(
+                        "${i + 1}. ${song.title}",
+                        style: const TextStyle(fontFamily: "Inter"),
                       ),
-                    );
-                  },
-                  onDismissed: (_) async {
-                    await SongDao().deleteSong(song.id!);
-                    _loadSongs(); // odśwież listę
-                  },
-                  child: ListTile(
-                    title: Text(
-                      "${i + 1}. ${song.title}",
-                      style: const TextStyle(fontFamily: "Inter"),
+                      subtitle: Text(
+                        song.artist,
+                        style: const TextStyle(fontFamily: "Inter"),
+                      ),
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => SongPage(song: song)),
+                      );
+                      _loadSongs();
+                    }
                     ),
-                    subtitle: Text(
-                      song.artist,
-                      style: const TextStyle(fontFamily: "Inter"),
-                    ),
-                   onTap: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => SongPage(song: song)),
-                    );
-                    _loadSongs();
-                  }
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
+      )
     );
   }
 
