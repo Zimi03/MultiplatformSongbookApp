@@ -7,7 +7,6 @@ class SongDao {
 
   SongDao();
 
-  // CREATE
   Future<int> insertSong(Song song) async {
     final db = await _dbHelper.database;
 
@@ -53,7 +52,6 @@ class SongDao {
     );
   }
 
-  // DELETE
   Future<int> deleteSong(int id) async {
     final db = await _dbHelper.database;
     return await db.delete(
